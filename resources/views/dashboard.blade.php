@@ -71,36 +71,15 @@
                                     <th class="border p-2">Acciones</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr>
-                                    <td class="border p-2">1023</td>
-                                    <td class="border p-2">Juan Pérez</td>
-                                    <td class="border p-2">5 de marzo</td>
-                                    <td class="border p-2">
-                                        <a href="#" class="text-blue-500 hover:underline">Descargar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border p-2">1022</td>
-                                    <td class="border p-2">María López</td>
-                                    <td class="border p-2">3 de marzo</td>
-                                    <td class="border p-2">
-                                        <a href="#" class="text-blue-500 hover:underline">Descargar</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border p-2">1021</td>
-                                    <td class="border p-2">Carlos Gómez</td>
-                                    <td class="border p-2">1 de marzo</td>
-                                    <td class="border p-2">
-                                        <a href="#" class="text-blue-500 hover:underline">Descargar</a>
-                                    </td>
-                                </tr>
+                                <tbody id="previous-requests">
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
+                    <div class="mt-4 flex justify-between">
+                        <button id="prev" class="bg-gray-200 px-3 py-1 rounded">Anterior</button>
+                        <button id="next" class="bg-gray-200 px-3 py-1 rounded">Siguiente</button>
+                      </div>
                 </div>
             </div>
         </div>
@@ -108,24 +87,54 @@
 </x-app-layout>
 
 <script>
-    const pedidosPorMes = [
-        { mes: "Enero", cantidad: 40 },
-        { mes: "Febrero", cantidad: 35 },
-        { mes: "Marzo", cantidad: 50 },
-        { mes: "Abril", cantidad: 42 },
-        { mes: "Mayo", cantidad: 30 },
-        { mes: "Junio", cantidad: 45 },
-        { mes: "Julio", cantidad: 39 },
-        { mes: "Agosto", cantidad: 41 },
-        { mes: "Septiembre", cantidad: 48 },
-        { mes: "Octubre", cantidad: 52 },
-        { mes: "Noviembre", cantidad: 37 },
-        { mes: "Diciembre", cantidad: 60 }
-    ];
+ async function fetchPedidos() {
+  try {
+    // CORREGIR : NO DETECTA LAS CREDENCIALES PARA LLAMAR LA API
+    const username = '';
+    const password = '';
+    const credentials = btoa(`${username}:${password}`); // Codifica "usuario:contraseña" en base64
+
+    // Realiza la petición a la API incluyendo el header Authorization
+    const response = await fetch('http://localhost:3100/api/getAllOrders', {
+      headers: {
+        'Authorization': `Basic ${credentials}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    // Procesamos el array para agrupar pedidos por mes usando la fecha_compra
+    const pedidosPorMes = {};
+
+    data.forEach(pedido => {
+      // Se asume que 'pedido.fecha_compra' es una cadena de fecha (ISO o similar)
+      const fecha = new Date(pedido.fecha_compra);
+      // Obtén el nombre del mes; puedes ajustar la configuración regional si lo deseas
+      const mes = fecha.toLocaleString('default', { month: 'long' });
+      // Inicializar si no existe y sumar uno (o acumular otro valor, por ejemplo el total)
+      if (!pedidosPorMes[mes]) {
+        pedidosPorMes[mes] = 0;
+      }
+      pedidosPorMes[mes]++;
+    });
+
+    // Convertir el objeto a un array de objetos
+    return Object.keys(pedidosPorMes).map(mes => ({
+      mes: mes,
+      cantidad: pedidosPorMes[mes]
+    }));
+  } catch (error) {
+    console.error('Error al obtener los datos de la API:', error);
+    return [];
+  }
+}
+
 
     let startIndex = 0;
-    const visibleCount = 3;
-    const tableBody = document.getElementById("table-body");
+    const visibleCount = 3; 
+    const tableBody = document.getElementById("previous-requests");
+    let pedidosPorMesData = []; 
 
     function updateTable() {
         tableBody.innerHTML = "";
@@ -154,7 +163,11 @@
         }
     });
 
-    updateTable();
+
+    fetchPedidos().then(data => {
+        pedidosPorMesData = data;
+        updateTable();
+    });
 </script>
 
 
