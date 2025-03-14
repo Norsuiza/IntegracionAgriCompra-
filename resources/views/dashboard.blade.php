@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
+        <h2 class="font-semibold text-xl text-black dark:text-white leading-tight">
             {{ __('Integracion Agricompras') }}
         </h2>
     </x-slot>
@@ -132,9 +132,9 @@
 
 
     let startIndex = 0;
-    const visibleCount = 3; 
+    const visibleCount = 3;
     const tableBody = document.getElementById("previous-requests");
-    let pedidosPorMesData = []; 
+    let pedidosPorMesData = [];
 
     function updateTable() {
         tableBody.innerHTML = "";
