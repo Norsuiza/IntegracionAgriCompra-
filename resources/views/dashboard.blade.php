@@ -85,51 +85,12 @@
         </div>
     </div>
 </x-app-layout>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
- async function fetchPedidos() {
-  try {
-    // CORREGIR : NO DETECTA LAS CREDENCIALES PARA LLAMAR LA API
-    const username = '';
-    const password = '';
-    const credentials = btoa(`${username}:${password}`); // Codifica "usuario:contraseña" en base64
 
-    // Realiza la petición a la API incluyendo el header Authorization
-    const response = await fetch('http://localhost:3100/api/getAllOrders', {
-      headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/json'
-      }
+       $(document).ready(function() {
+        console.log('Listo');
     });
-
-    const data = await response.json();
-
-    // Procesamos el array para agrupar pedidos por mes usando la fecha_compra
-    const pedidosPorMes = {};
-
-    data.forEach(pedido => {
-      // Se asume que 'pedido.fecha_compra' es una cadena de fecha (ISO o similar)
-      const fecha = new Date(pedido.fecha_compra);
-      // Obtén el nombre del mes; puedes ajustar la configuración regional si lo deseas
-      const mes = fecha.toLocaleString('default', { month: 'long' });
-      // Inicializar si no existe y sumar uno (o acumular otro valor, por ejemplo el total)
-      if (!pedidosPorMes[mes]) {
-        pedidosPorMes[mes] = 0;
-      }
-      pedidosPorMes[mes]++;
-    });
-
-    // Convertir el objeto a un array de objetos
-    return Object.keys(pedidosPorMes).map(mes => ({
-      mes: mes,
-      cantidad: pedidosPorMes[mes]
-    }));
-  } catch (error) {
-    console.error('Error al obtener los datos de la API:', error);
-    return [];
-  }
-}
-
 
     let startIndex = 0;
     const visibleCount = 3;
@@ -169,6 +130,7 @@
         updateTable();
     });
 </script>
+
 
 
 
