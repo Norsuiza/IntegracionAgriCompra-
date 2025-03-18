@@ -1,6 +1,7 @@
 <x-app-layout>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    @section('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+@section('styles')
         <style>
 
         </style>
@@ -15,11 +16,11 @@
     <body class="bg-white text-gray-900 dark:bg-gray-800 dark:text-white">
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-white">
+            <div class="bg-white dark:bg-gray-300 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
                     <div class="container mx-auto p-6">
 
-                        <h2 class="text-2xl font-semibold mb-4">Requests Agro</h2>
+                        <h2 class="text-2xl font-semibold mb-4">Peticiones Agro</h2>
 
                         <div class="overflow-x-auto">
                             <table id="requestsTable" class="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
@@ -28,14 +29,20 @@
                                     <th class="py-2 px-4 border">ID</th>
                                     <th class="py-2 px-4 border">Número de Órdenes</th>
                                     <th class="py-2 px-4 border">Fecha de Solicitud</th>
+                                    <th class="py-2 px-4 border">Volver a Consultar</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-gray-900 dark:text-black">
                                 @foreach($requestsAgro as $request)
-                                    <tr class="bg-white dark:bg-gray-700 ">
+                                    <tr class="bg-white dark:bg-gray-700 clickable-row" data-id="{{ $request->id }}">
                                         <td class="py-2 px-4 border text-center">{{ $request->id }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $request->ordenes }}</td>
                                         <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($request->request_date)->format('Y-m-d') }}</td>
+                                        <td class="py-2 px-4 border text-center">
+                                            <button class="btn">
+                                                <i class="bi bi-arrow-clockwise"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -60,8 +67,8 @@
                                 </thead>
                                 <tbody class="text-gray-900 dark:text-black">
                                 @foreach($orders as $order)
-                                    <tr class="bg-white dark:bg-gray-700">
-                                        <td class="py-2 px-4 border text-center">{{ $order->orden_compra }}</td>
+                                    <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="{{ $order->id }}">
+                                    <td class="py-2 px-4 border text-center">{{ $order->orden_compra }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $order->dias_credito }}</td>
                                         <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($order->fecha_compra)->format('Y-m-d') }}</td>
                                         <td class="py-2 px-4 border text-center">${{ number_format($order->total_general, 2) }}</td>
@@ -73,12 +80,55 @@
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modals -->
+    <div id="requestDetailsModal" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-3/4 max-w-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Detalles de la Petición</h2>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
+                    <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
+                    <tr>
+                        <th class="py-2 px-4 border">ID Orden</th>
+                    </tr>
+                    </thead>
+                    <tbody id="modalRequestDetails" class="text-gray-900 dark:text-white">
+                    <!-- Los detalles se llenarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button onclick="closeModal()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="orderDetailsModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-3/4">
+            <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Detalles de la Orden</h2>
+            <table class="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
+                <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
+                <tr>
+                    <th class="py-2 px-4 border">Artículo</th>
+                    <th class="py-2 px-4 border">Cantidad</th>
+                    <th class="py-2 px-4 border">Precio</th>
+                    <th class="py-2 px-4 border">Subtotal</th>
+                </tr>
+                </thead>
+                <tbody id="modalOrderDetails" class="text-gray-900 dark:text-white">
+                <!-- Aquí se insertarán los detalles dinámicamente -->
+                </tbody>
+            </table>
+            <button id="closeOrderModal" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
+        </div>
+    </div>
+
+
     </body>
 
 </x-app-layout>
@@ -114,7 +164,92 @@
                        "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
                    }
                });
+
+       $(".clickable-row").on("click", function() {
+           let requestId = $(this).data("id"); // Obtener el ID de la petición
+           loadRequestDetails(requestId);
+       });
    });
+
+   //Funciones Para el Modal de Requests
+
+   function loadRequestDetails(requestId) {
+       // Realizar la petición AJAX
+       $.ajax({
+           url: `/requests/${requestId}/details`,  // Ruta para obtener detalles
+           type: "GET",
+           success: function(response) {
+               let detailsHtml = "";
+               response.forEach(detail => {
+                   detailsHtml += `
+                    <tr>
+                        <td class="py-2 px-4 border text-center">${detail.order_id}</td>
+                    </tr>`;
+               });
+
+               $("#modalRequestDetails").html(detailsHtml);
+               openModal(); // Abre el modal
+           },
+           error: function() {
+               alert("Error al obtener los detalles.");
+           }
+       });
+   }
+
+   // Función para abrir el modal
+   function openModal() {
+       document.getElementById("requestDetailsModal").classList.remove("hidden");
+   }
+
+   // Función para cerrar el modal
+   function closeModal() {
+       document.getElementById("requestDetailsModal").classList.add("hidden");
+   }
+
+   //Funciones para el modal de Ordenes de Compras
+
+   $(document).ready(function() {
+       $(document).on("click", ".clickable-order-row", function() {
+           let orderId = $(this).data("id");
+           console.log("Orden clickeada, ID:", orderId);
+
+           $.ajax({
+               url: `/orders/${orderId}/details`,
+               type: "GET",
+               success: function(response) {
+                   console.log("Detalles recibidos:", response);
+
+                   if (response.length === 0) {
+                       $("#modalOrderDetails").html("<tr><td colspan='4' class='text-center py-2 px-4 border'>No hay detalles</td></tr>");
+                   } else {
+                       let detailsHtml = "";
+                       response.forEach(detail => {
+                           detailsHtml += `<tr>
+                            <td class="py-2 px-4 border text-center">${detail.articulo_nombre}</td>
+                            <td class="py-2 px-4 border text-center">${detail.cantidad}</td>
+                            <td class="py-2 px-4 border text-center">${detail.precio}</td>
+                            <td class="py-2 px-4 border text-center">${detail.subtotal}</td>
+                        </tr>`;
+                       });
+
+                       $("#modalOrderDetails").html(detailsHtml);
+                   }
+
+                   $("#orderDetailsModal").removeClass("hidden");
+               },
+               error: function(xhr, status, error) {
+                   console.error("Error en AJAX:", error);
+                   alert("Error al obtener los detalles.");
+               }
+           });
+       });
+
+       // Cerrar el modal
+       $("#closeOrderModal").on("click", function() {
+           $("#orderDetailsModal").addClass("hidden");
+       });
+   });
+
 
 
 </script>
