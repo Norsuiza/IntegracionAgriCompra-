@@ -40,8 +40,11 @@
                                         <td class="py-2 px-4 border text-center">{{ $request->id }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $request->ordenes }}</td>
                                         <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($request->request_date)->format('Y-m-d') }}</td>
-                                        <td class="py-2 px-4 border text-center">                  
-                                        <button onclick="reactivateRequest(event, {{ $request->id }})" class="bg-blue-500 text-white hover:bg-yellow-600 font-bold py-2 px-4 rounded">Encender</button>
+                                        <td class="py-2 px-4 border text-center">
+                                            <button onclick="event.stopPropagation(); reactivateRequest(event, {{ $request->id }})"
+                                                    class="bg-blue-500 text-white hover:bg-yellow-600 font-bold py-2 px-4 rounded">
+                                                Encender
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -51,7 +54,7 @@
 
                         <hr class="my-6 border-t-2 border-gray-300 dark:border-gray-600">
 
-                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras</h2>
+                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras STATUS 1</h2>
                         <div class="overflow-x-auto">
                             <table id="ordersTable" class="min-w-full border border-gray-300 dark:border-gray-600 dark:bg-[#0a0a0a] rounded-lg shadow-md">
                                 <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
@@ -66,18 +69,38 @@
                                 </tr>
                                 </thead>
                                 <tbody class="text-gray-900 dark:text-black">
-                                @foreach($orders as $order)
-                                    <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="{{ $order->id }}">
-                                    <td class="py-2 px-4 border text-center">{{ $order->orden_compra }}</td>
-                                        <td class="py-2 px-4 border text-center">{{ $order->dias_credito }}</td>
-                                        <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($order->fecha_compra)->format('Y-m-d') }}</td>
-                                        <td class="py-2 px-4 border text-center">${{ number_format($order->total_general, 2) }}</td>
-                                        <td class="py-2 px-4 border">{{ $order->sucursal_nombre }}</td>
-                                        <td class="py-2 px-4 border">{{ $order->proveedor_nombre }}</td>
-                                        <td class="py-2 px-4 border">{{ $order->proveedor_rfc }}</td>
+
+                                    <tr class="bg-white dark:bg-gray-700 clickable-order-row">
+                                    <td class="py-2 px-4 border text-center"></td>
+                                        <td class="py-2 px-4 border text-center"></td>
+                                        <td class="py-2 px-4 border text-center"></td>
+                                        <td class="py-2 px-4 border text-center"></td>
+                                        <td class="py-2 px-4 border"></td>
+                                        <td class="py-2 px-4 border"></td>
+                                        <td class="py-2 px-4 border"></td>
                                     </tr>
-                                @endforeach
                                 </tbody>
+                            </table>
+                        </div>
+
+                        <hr class="my-6 border-t-2 border-gray-300 dark:border-gray-600">
+
+                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras STATUS 1/0</h2>
+                        <div class="overflow-x-auto">
+                            <table id="ordersTableFiltered" class="min-w-full border border-gray-300 dark:border-gray-600 dark:bg-[#0a0a0a] rounded-lg shadow-md">
+                                <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
+                                <tr>
+                                    <th class="py-2 px-4 border">Orden Compra</th>
+                                    <th class="py-2 px-4 border">Días Crédito</th>
+                                    <th class="py-2 px-4 border">Fecha Compra</th>
+                                    <th class="py-2 px-4 border">Total General</th>
+                                    <th class="py-2 px-4 border">Sucursal</th>
+                                    <th class="py-2 px-4 border">Proveedor</th>
+                                    <th class="py-2 px-4 border">RFC Proveedor</th>
+                                    <th class="py-2 px-4 border">Estatus</th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -137,23 +160,93 @@
 
 <script>
 
-    function loadPendingOrders(){
+    let allOrders = [];
+
+    function loadOrders() {
         $.ajax({
-            url: '/orders/getPendingOrders',
+            url: '/orders/getOrders',
             type: "GET",
-            success: function (response){
-                console.log(response);
+            success: function (response) {
+                allOrders = response; // Guardamos todas las órdenes en la variable global
+                renderTable();
+                let tableBody = $("#ordersTable tbody");
+                tableBody.empty(); // Limpiar la tabla antes de insertar nuevos datos
+
+                let filteredOrders = response.filter(order => order.status === 1);
+
+                if (filteredOrders.length === 0) {
+                    tableBody.append('<tr><td colspan="7" class="text-center">No hay órdenes disponibles</td></tr>');
+                } else {
+                    filteredOrders.forEach(order => {
+                        let row = `
+                        <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="${order.id}">
+                            <td class="py-2 px-4 border text-center">${order.orden_compra}</td>
+                            <td class="py-2 px-4 border text-center">${order.dias_credito}</td>
+                            <td class="py-2 px-4 border text-center">${order.fecha_compra}</td>
+                            <td class="py-2 px-4 border text-center">$${parseFloat(order.total_general).toFixed(2)}</td>
+                            <td class="py-2 px-4 border">${order.sucursal_nombre}</td>
+                            <td class="py-2 px-4 border">${order.proveedor_nombre}</td>
+                            <td class="py-2 px-4 border">${order.proveedor_rfc}</td>
+                        </tr>
+                    `;
+                        tableBody.append(row);
+                    });
+                }
+                // Inicializa DataTables después de cargar los datos
+                $('#ordersTable').DataTable({
+                    "ordering": true,
+                    "paging": true,
+                    "searching": true,
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+                    }
+                });
             },
-            error: function(){
-                alert("ta mal");
+            error: function () {
+                alert("Error al cargar las órdenes.");
             }
         });
+    }
+
+    function renderTable() {
+        let tableBody = $("#ordersTableFiltered tbody");
+        tableBody.empty();
+
+        if (allOrders.length === 0) {
+            tableBody.append('<tr><td colspan="8" class="text-center">No hay órdenes disponibles</td></tr>');
+            return;
+        }
+
+        allOrders.forEach(order => {
+            let statusLabel = order.status === 1
+                ? '<span class="text-green-600 font-bold">Pendiente</span>'
+                : '<span class="text-red-600 font-bold">Consultadas</span>';
+
+            let row = `
+                <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="${order.id}">
+                    <td class="py-2 px-4 border text-center">${order.orden_compra}</td>
+                    <td class="py-2 px-4 border text-center">${order.dias_credito}</td>
+                    <td class="py-2 px-4 border text-center">${order.fecha_compra}</td>
+                    <td class="py-2 px-4 border text-center">$${parseFloat(order.total_general).toFixed(2)}</td>
+                    <td class="py-2 px-4 border">${order.sucursal_nombre}</td>
+                    <td class="py-2 px-4 border">${order.proveedor_nombre}</td>
+                    <td class="py-2 px-4 border">${order.proveedor_rfc}</td>
+                    <td class="py-2 px-4 border text-center">${statusLabel}</td>
+                </tr>
+            `;
+            tableBody.append(row);
+        });
+
+        // Inicializar DataTables (si aún no está inicializado)
+        if (!$.fn.DataTable.isDataTable("#ordersTableFiltered")) {
+            $("#ordersTableFiltered").DataTable();
+        }
     }
 
     function reactivateRequest(e, requestId){
        e.preventDefault();
         $.ajax({
-           url: `/requests/${requestId}/reactivate`, 
+           url: `/requests/${requestId}/reactivate`,
            type: "PUT",
            data: {
              _token: '{{ csrf_token() }}'
@@ -167,81 +260,64 @@
        });
     }
 
-   $(document).ready(function()
+
+    function loadRequestDetails(requestId) {
+        // Realizar la petición AJAX
+        $.ajax({
+            url: `/requests/${requestId}/details`,  // Ruta para obtener detalles
+            type: "GET",
+            success: function(response) {
+                let detailsHtml = "";
+                response.forEach(detail => {
+                    detailsHtml += `
+                    <tr>
+                        <td class="py-2 px-4 border text-center">${detail.order_id}</td>
+                    </tr>`;
+                });
+
+                $("#modalRequestDetails").html(detailsHtml);
+                openModal(); // Abre el modal
+            },
+            error: function() {
+                alert("Error al obtener los detalles.");
+            }
+        });
+    }
+
+    // Función para abrir el modal
+    function openModal() {
+        document.getElementById("requestDetailsModal").classList.remove("hidden");
+    }
+
+    // Función para cerrar el modal
+    function closeModal() {
+        document.getElementById("requestDetailsModal").classList.add("hidden");
+    }
+
+    $(document).ready(function()
    {
-            loadPendingOrders();
+       loadOrders();
 
-           let orders = @json($orders);
-           let requestsAgro = @json($requestsAgro);
 
-           console.log("Orders:", orders);
-           console.log("Requests Agro:", requestsAgro);
-
-           console.log('Listo');
-
-               $('#ordersTable').DataTable({
-                   "ordering": true,
-                   "paging": true,
-                   "searching": true,
-                   "language": {
-                       "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-                   }
-               });
-
-               $('#requestsTable').DataTable({
-                   "ordering": true,
-                   "paging": true,
-                   "searching": true,
-                   "language": {
-                       "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-                   }
-               });
+       $('#requestsTable').DataTable({
+           "ordering": true,
+           "paging": true,
+           "searching": true,
+           "language": {
+               "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+           }
+       });
 
        $(".clickable-row").on("click", function() {
            let requestId = $(this).data("id"); // Obtener el ID de la petición
            loadRequestDetails(requestId);
        });
-   });
 
-   //Funciones Para el Modal de Requests
-
-   function loadRequestDetails(requestId) {
-       // Realizar la petición AJAX
-       $.ajax({
-           url: `/requests/${requestId}/details`,  // Ruta para obtener detalles
-           type: "GET",
-           success: function(response) {
-               let detailsHtml = "";
-               response.forEach(detail => {
-                   detailsHtml += `
-                    <tr>
-                        <td class="py-2 px-4 border text-center">${detail.order_id}</td>
-                    </tr>`;
-               });
-
-               $("#modalRequestDetails").html(detailsHtml);
-               openModal(); // Abre el modal
-           },
-           error: function() {
-               alert("Error al obtener los detalles.");
-           }
-       });
-   }
-
-   // Función para abrir el modal
-   function openModal() {
-       document.getElementById("requestDetailsModal").classList.remove("hidden");
-   }
-
-   // Función para cerrar el modal
-   function closeModal() {
-       document.getElementById("requestDetailsModal").classList.add("hidden");
-   }
-
-   //Funciones para el modal de Ordenes de Compras
-
-   $(document).ready(function() {
        $(document).on("click", ".clickable-order-row", function() {
+           if ($(event.target).closest("button").length) {
+               event.stopPropagation(); // Evita que el evento suba a la fila
+               return;
+           }
            let orderId = $(this).data("id");
            console.log("Orden clickeada, ID:", orderId);
 
@@ -281,8 +357,6 @@
            $("#orderDetailsModal").addClass("hidden");
        });
    });
-
-
 
 </script>
 

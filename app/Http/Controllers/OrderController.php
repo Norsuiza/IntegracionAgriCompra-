@@ -8,13 +8,22 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+
+
     public function getDetails($id)
     {
         $details = OrderDetail::where('order_id', $id)->get();
         return response()->json($details);
     }
-    public function getPendingOrders(){
-        $pendingOrders = OrderHeader::where('status', 1)->get();
-        return response()->json($pendingOrders);
+    public function getOrders(){
+
+        $userId = auth()->id();
+
+        $orders = OrderHeader::where('cliente_middleware_id', $userId)
+            ->orderBy('fecha_compra', 'desc')
+            ->get();
+
+        return response()->json($orders);
     }
 }

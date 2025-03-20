@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/requests/{id}/details', [RequestController::class, 'getDetails']);
     Route::put('/requests/{id}/reactivate', [RequestController::class, 'reactivate']);
     Route::get('/orders/{id}/details', [OrderController::class, 'getDetails']);
-    Route::get('/orders/getPendingOrders', [OrderController::class, 'getPendingOrders']);
+    Route::get('/orders/getOrders', [OrderController::class, 'getOrders']);
 
 });
 
