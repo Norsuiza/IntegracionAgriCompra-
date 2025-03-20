@@ -63,7 +63,7 @@
   </header>
 
   <main class="main">
-
+  
     <!-- Hero Section -->
     <section id="hero" class="hero section dark-background">
 

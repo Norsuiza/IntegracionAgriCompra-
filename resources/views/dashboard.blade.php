@@ -1,6 +1,8 @@
 <x-app-layout>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 @section('styles')
         <style>
 
@@ -29,7 +31,7 @@
                                     <th class="py-2 px-4 border">ID</th>
                                     <th class="py-2 px-4 border">Número de Órdenes</th>
                                     <th class="py-2 px-4 border">Fecha de Solicitud</th>
-                                    <th class="py-2 px-4 border">Volver a Consultar</th>
+                                    <th class="py-2 px-4 border">Estado</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-gray-900 dark:text-black">
@@ -38,10 +40,8 @@
                                         <td class="py-2 px-4 border text-center">{{ $request->id }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $request->ordenes }}</td>
                                         <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($request->request_date)->format('Y-m-d') }}</td>
-                                        <td class="py-2 px-4 border text-center">
-                                            <button class="btn">
-                                                <i class="bi bi-arrow-clockwise"></i>
-                                            </button>
+                                        <td class="py-2 px-4 border text-center">                  
+                                        <button onclick="reactivateRequest(event, {{ $request->id }})" class="bg-blue-500 text-white hover:bg-yellow-600 font-bold py-2 px-4 rounded">Encender</button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -137,8 +137,40 @@
 
 <script>
 
+    function loadPendingOrders(){
+        $.ajax({
+            url: '/orders/getPendingOrders',
+            type: "GET",
+            success: function (response){
+                console.log(response);
+            },
+            error: function(){
+                alert("ta mal");
+            }
+        });
+    }
+
+    function reactivateRequest(e, requestId){
+       e.preventDefault();
+        $.ajax({
+           url: `/requests/${requestId}/reactivate`, 
+           type: "PUT",
+           data: {
+             _token: '{{ csrf_token() }}'
+            },
+           success: function(response) {
+                alert(response);
+           },
+           error: function() {
+               alert("Error al obtener los detalles.");
+           }
+       });
+    }
+
    $(document).ready(function()
    {
+            loadPendingOrders();
+
            let orders = @json($orders);
            let requestsAgro = @json($requestsAgro);
 

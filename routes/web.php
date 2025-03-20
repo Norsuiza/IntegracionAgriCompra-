@@ -19,8 +19,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/requests/{id}/details', [RequestController::class, 'getDetails']);
+    Route::put('/requests/{id}/reactivate', [RequestController::class, 'reactivate']);
     Route::get('/orders/{id}/details', [OrderController::class, 'getDetails']);
-
+    Route::get('/orders/getPendingOrders', [OrderController::class, 'getPendingOrders']);
 
 });
 
