@@ -54,7 +54,7 @@
 
                         <hr class="my-6 border-t-2 border-gray-300 dark:border-gray-600">
 
-                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras STATUS 1</h2>
+                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras Por Bajar</h2>
                         <div class="overflow-x-auto">
                             <table id="ordersTable" class="min-w-full border border-gray-300 dark:border-gray-600 dark:bg-[#0a0a0a] rounded-lg shadow-md">
                                 <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
@@ -85,7 +85,7 @@
 
                         <hr class="my-6 border-t-2 border-gray-300 dark:border-gray-600">
 
-                        <h2 class="text-2xl font-bold mb-4">Ordenes de Compras STATUS 1/0</h2>
+                        <h2 class="text-2xl font-bold mb-4">Ultimas Ordenes de Compras</h2>
                         <div class="overflow-x-auto">
                             <table id="ordersTableFiltered" class="min-w-full border border-gray-300 dark:border-gray-600 dark:bg-[#0a0a0a] rounded-lg shadow-md">
                                 <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
