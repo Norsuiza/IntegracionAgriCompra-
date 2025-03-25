@@ -39,7 +39,9 @@
                                     <tr class="bg-white dark:bg-gray-700 clickable-row" data-id="{{ $request->id }}">
                                         <td class="py-2 px-4 border text-center">{{ $request->id }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $request->ordenes }}</td>
-                                        <td class="py-2 px-4 border text-center">{{ \Carbon\Carbon::parse($request->request_date)->format('Y-m-d') }}</td>
+                                        <td class="py-2 px-4 border text-center">
+                                            {{ \Carbon\Carbon::parse($request->request_date)->format('Y-m-d H:i:s') }}
+                                        </td>
                                         <td class="py-2 px-4 border text-center">
                                             <button onclick="event.stopPropagation(); reactivateRequest(event, {{ $request->id }})"
                                                     class="bg-blue-500 text-white hover:bg-yellow-600 font-bold py-2 px-4 rounded">
@@ -182,8 +184,10 @@
                         <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="${order.id}">
                             <td class="py-2 px-4 border text-center">${order.orden_compra}</td>
                             <td class="py-2 px-4 border text-center">${order.dias_credito}</td>
-                            <td class="py-2 px-4 border text-center">${order.fecha_compra}</td>
-                            <td class="py-2 px-4 border text-center">$${parseFloat(order.total_general).toFixed(2)}</td>
+                            <td class="py-2 px-4 border text-center">${order.fecha_compra.split(' ')[0]}</td>
+                            <td class="py-2 px-4 border text-center">
+                            ${parseFloat(order.total_general).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </td>
                             <td class="py-2 px-4 border">${order.sucursal_nombre}</td>
                             <td class="py-2 px-4 border">${order.proveedor_nombre}</td>
                             <td class="py-2 px-4 border">${order.proveedor_rfc}</td>
@@ -197,8 +201,15 @@
                     "ordering": true,
                     "paging": true,
                     "searching": true,
-                    "language": {
-                        "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+                    },
+                    "initComplete": function() {
+                        $('.dataTables_length select').css({
+                            'width': 'auto',
+                            'min-width': '60px',
+                            'padding': '5px'
+                        });
                     }
                 });
             },
@@ -223,23 +234,32 @@
                 : '<span class="text-red-600 font-bold">Consultadas</span>';
 
             let row = `
-                <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="${order.id}">
-                    <td class="py-2 px-4 border text-center">${order.orden_compra}</td>
-                    <td class="py-2 px-4 border text-center">${order.dias_credito}</td>
-                    <td class="py-2 px-4 border text-center">${order.fecha_compra}</td>
-                    <td class="py-2 px-4 border text-center">$${parseFloat(order.total_general).toFixed(2)}</td>
-                    <td class="py-2 px-4 border">${order.sucursal_nombre}</td>
-                    <td class="py-2 px-4 border">${order.proveedor_nombre}</td>
-                    <td class="py-2 px-4 border">${order.proveedor_rfc}</td>
-                    <td class="py-2 px-4 border text-center">${statusLabel}</td>
-                </tr>
-            `;
+            <tr class="bg-white dark:bg-gray-700 clickable-order-row" data-id="${order.id}">
+                <td class="py-2 px-4 border text-center">${order.orden_compra}</td>
+                <td class="py-2 px-4 border text-center">${order.dias_credito}</td>
+                <td class="py-2 px-4 border text-center">${order.fecha_compra.split(' ')[0]}</td>
+                <td class="py-2 px-4 border text-center">
+                ${parseFloat(order.total_general).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td class="py-2 px-4 border">${order.sucursal_nombre}</td>
+                <td class="py-2 px-4 border">${order.proveedor_nombre}</td>
+                <td class="py-2 px-4 border">${order.proveedor_rfc}</td>
+                <td class="py-2 px-4 border text-center">${statusLabel}</td>
+            </tr>
+        `;
             tableBody.append(row);
         });
 
-        // Inicializar DataTables (si aún no está inicializado)
+        // Inicializar DataTables con idioma en español
         if (!$.fn.DataTable.isDataTable("#ordersTableFiltered")) {
-            $("#ordersTableFiltered").DataTable();
+            $("#ordersTableFiltered").DataTable({
+                "ordering": true,
+                "paging": true,
+                "searching": true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+                },
+            });
         }
     }
 
@@ -303,9 +323,9 @@
            "ordering": true,
            "paging": true,
            "searching": true,
-           "language": {
-               "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json"
-           }
+           language: {
+               url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+           },
        });
 
        $(".clickable-row").on("click", function() {
