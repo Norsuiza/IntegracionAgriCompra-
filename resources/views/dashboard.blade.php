@@ -111,7 +111,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
     <div id="requestDetailsModal" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-3/4 max-w-lg">
             <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Detalles de la Petición</h2>
@@ -152,11 +151,10 @@
             <button id="closeOrderModal" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
         </div>
     </div>
-
-
     </body>
 
 </x-app-layout>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
