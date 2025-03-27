@@ -10,7 +10,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        $companies = Company::all(); // Obtiene todas las compañías para el select en el modal
+        $companies = Company::all();
         return view('catalogs.users', compact('users', 'companies'));
     }
 

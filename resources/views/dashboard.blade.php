@@ -196,13 +196,32 @@
                 }
                 // Inicializa DataTables después de cargar los datos
                 $('#ordersTable').DataTable({
-                    "ordering": true,
-                    "paging": true,
-                    "searching": true,
+                    ordering: true,
+                    paging: true,
+                    searching: true,
                     language: {
-                        url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+                        processing:     "Procesando...",
+                        search:         "Buscar:",
+                        lengthMenu:     "Mostrar _MENU_ registros",
+                        info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                        infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                        infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+                        infoPostFix:    "",
+                        loadingRecords: "Cargando...",
+                        zeroRecords:    "No se encontraron resultados",
+                        emptyTable:     "Ningún dato disponible en esta tabla",
+                        paginate: {
+                            first:      "Primero",
+                            previous:   "Anterior",
+                            next:       "Siguiente",
+                            last:       "Último"
+                        },
+                        aria: {
+                            sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+                            sortDescending: ": Activar para ordenar la columna de manera descendente"
+                        }
                     },
-                    "initComplete": function() {
+                    initComplete: function() {
                         $('.dataTables_length select').css({
                             'width': 'auto',
                             'min-width': '60px',
@@ -250,13 +269,39 @@
 
         // Inicializar DataTables con idioma en español
         if (!$.fn.DataTable.isDataTable("#ordersTableFiltered")) {
-            $("#ordersTableFiltered").DataTable({
-                "ordering": true,
-                "paging": true,
-                "searching": true,
+            $('#ordersTableFiltered').DataTable({
+                ordering: true,
+                paging: true,
+                searching: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+                    processing:     "Procesando...",
+                    search:         "Buscar:",
+                    lengthMenu:     "Mostrar _MENU_ registros",
+                    info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+                    infoPostFix:    "",
+                    loadingRecords: "Cargando...",
+                    zeroRecords:    "No se encontraron resultados",
+                    emptyTable:     "Ningún dato disponible en esta tabla",
+                    paginate: {
+                        first:      "Primero",
+                        previous:   "Anterior",
+                        next:       "Siguiente",
+                        last:       "Último"
+                    },
+                    aria: {
+                        sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+                        sortDescending: ": Activar para ordenar la columna de manera descendente"
+                    }
                 },
+                initComplete: function() {
+                    $('.dataTables_length select').css({
+                        'width': 'auto',
+                        'min-width': '60px',
+                        'padding': '5px'
+                    });
+                }
             });
         }
     }
@@ -318,12 +363,38 @@
 
 
        $('#requestsTable').DataTable({
-           "ordering": true,
-           "paging": true,
-           "searching": true,
+           ordering: true,
+           paging: true,
+           searching: true,
            language: {
-               url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json',
+               processing:     "Procesando...",
+               search:         "Buscar:",
+               lengthMenu:     "Mostrar _MENU_ registros",
+               info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+               infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros",
+               infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+               infoPostFix:    "",
+               loadingRecords: "Cargando...",
+               zeroRecords:    "No se encontraron resultados",
+               emptyTable:     "Ningún dato disponible en esta tabla",
+               paginate: {
+                   first:      "Primero",
+                   previous:   "Anterior",
+                   next:       "Siguiente",
+                   last:       "Último"
+               },
+               aria: {
+                   sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+                   sortDescending: ": Activar para ordenar la columna de manera descendente"
+               }
            },
+           initComplete: function() {
+               $('.dataTables_length select').css({
+                   'width': 'auto',
+                   'min-width': '60px',
+                   'padding': '5px'
+               });
+           }
        });
 
        $(".clickable-row").on("click", function() {

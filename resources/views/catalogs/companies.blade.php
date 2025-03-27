@@ -24,17 +24,15 @@
                     <div class="container mx-auto p-6">
                         <h2 class="text-2xl font-semibold mb-4">Listado de Compañías</h2>
                         <div class="overflow-x-auto">
+                            <button id="openModal" class="bg-green-300 text-black hover:bg-blue-500 font-bold py-2 px-4 rounded mb-4">
+                                Nueva Compañía
+                            </button>
                             <table id="companiesTable" class="min-w-full border border-gray-300 dark:border-gray-600 rounded-lg shadow-md">
                                 <thead class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white">
                                 <tr>
                                     <th class="py-2 px-4 border">ID</th>
                                     <th class="py-2 px-4 border">Nombre</th>
-                                    <th class="py-2 px-4 border">URL</th>
-                                    <th class="py-2 px-4 border">
-                                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createCompanyModal">
-                                            Nueva Compañía
-                                        </button>
-                                    </th>
+                                    <th class="py-2 px-4 border">Acciones</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-gray-900 dark:text-black">
@@ -43,23 +41,17 @@
                                         <td class="py-2 px-4 border text-center">{{ $company->id }}</td>
                                         <td class="py-2 px-4 border text-center">{{ $company->name }}</td>
                                         <td class="py-2 px-4 border text-center">
-                                            <a target="_blank" href="{{ $company->url }}">Ver enlace</a>
-                                        </td>
-                                        <td class="py-2 px-4 border text-center">
                                             <!-- Botón de Editar -->
-                                            <button class="btn btn-warning btn-sm"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#editModal"
+                                            <button class="bg-blue-300 text-black hover:bg-blue-500 font-bold py-2 px-4 rounded openEditModal" type="button"
                                                     data-id="{{ $company->id }}"
-                                                    data-name="{{ $company->name }}"
-                                                    data-url="{{ $company->url }}">
+                                                    data-name="{{ $company->name }}">
                                                 Editar
                                             </button>
                                             <!-- Botón de Eliminar -->
                                             <form action="{{ route('companies.destroy', $company->id) }}" method="POST" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta compañía?')">
+                                                <button class="bg-orange-400 text-black hover:bg-red-500 font-bold py-2 px-4 rounded" type="submit"  onclick="return confirm('¿Estás seguro de eliminar esta compañía?')">
                                                     Eliminar
                                                 </button>
                                             </form>
@@ -76,56 +68,47 @@
     </div>
 
     <!-- Modal para crear compañía -->
-    <div id="modalCompany" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createCompanyModalLabel">Crear Nueva Compañía</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createCompanyForm">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="url" class="form-label">URL</label>
-                            <input type="url" class="form-control" id="url" name="url" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Crear Compañía</button>
-                    </form>
-                </div>
+    <div id="modalCompany" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h5 class="text-xl font-bold">Crear Nueva Compañía</h5>
+                <button id="closeModal" class="text-gray-600 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div class="p-4">
+                <form id="createCompanyForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md" id="name" name="name" required>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Crear Compañía
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- Modal para editar compañía -->
-    <div id="modalUser" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Editar Compañía</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editCompanyForm">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-3">
-                            <label for="edit-name" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="edit-name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit-url" class="form-label">URL</label>
-                            <input type="url" class="form-control" id="edit-url" name="url" required>
-                        </div>
-                        <button type="submit" class="btn" style="background:#2a3749; color: whitesmoke">
-                            Guardar cambios
-                        </button>
-                    </form>
-                </div>
+    <div id="editModal" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h5 class="modal-title text-xl font-bold" id="editModalLabel">Editar Compañía</h5>
+                <button type="button" id="closeEditModal" class="text-gray-600 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-4">
+                <form id="editCompanyForm">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="edit-name" class="block text-sm font-medium text-gray-700">Nombre</label>
+                        <input type="text" class="mt-1 block w-full border-gray-300 rounded-md" id="edit-name" name="name" required>
+                    </div>
+                    <!-- Puedes agregar más campos si lo necesitas, por ejemplo para la URL -->
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Guardar cambios
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -139,27 +122,82 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function() {
+        const modal = document.getElementById("modalCompany");
+        const openModal = document.getElementById("openModal");
+        const closeModal = document.getElementById("closeModal");
+
+        openModal.addEventListener("click", function () {
+            modal.classList.remove("hidden");
+        });
+
+        // Función para cerrar el modal
+        closeModal.addEventListener("click", function () {
+            modal.classList.add("hidden");
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        modal.addEventListener("click", function (e) {
+            if (e.target === modal) {
+                modal.classList.add("hidden");
+            }
+        });
+
+
+
         // Inicializa DataTables para la tabla de compañías
         $('#companiesTable').DataTable({
             ordering: true,
             paging: true,
             searching: true,
             language: {
-                url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json'
+                processing:     "Procesando...",
+                search:         "Buscar:",
+                lengthMenu:     "Mostrar _MENU_ registros",
+                info:           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                infoEmpty:      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                infoFiltered:   "(filtrado de un total de _MAX_ registros)",
+                infoPostFix:    "",
+                loadingRecords: "Cargando...",
+                zeroRecords:    "No se encontraron resultados",
+                emptyTable:     "Ningún dato disponible en esta tabla",
+                paginate: {
+                    first:      "Primero",
+                    previous:   "Anterior",
+                    next:       "Siguiente",
+                    last:       "Último"
+                },
+                aria: {
+                    sortAscending:  ": Activar para ordenar la columna de manera ascendente",
+                    sortDescending: ": Activar para ordenar la columna de manera descendente"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').css({
+                    'width': 'auto',
+                    'min-width': '60px',
+                    'padding': '5px'
+                });
             }
         });
 
-        // Inyección de datos en el modal de edición
-        $('#editModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
+        $(document).on('click', '.openEditModal', function() {
+            var button = $(this);
             var companyId = button.data('id');
             var companyName = button.data('name');
-            var companyUrl = button.data('url');
-            var modal = $(this);
+            // Si necesitas la URL: var companyUrl = button.data('url');
+
+            var modal = $('#editModal');
             modal.find('.modal-title').text('Editar Compañía: ' + companyName);
             modal.find('#edit-name').val(companyName);
-            modal.find('#edit-url').val(companyUrl);
+            // Actualiza la acción del formulario para enviar la petición al endpoint correspondiente
             $('#editCompanyForm').attr('action', '/companies/' + companyId);
+
+            // Muestra el modal quitando la clase 'hidden'
+            modal.removeClass('hidden');
+        });
+
+        $('#closeEditModal').on('click', function() {
+            $('#editModal').addClass('hidden');
         });
 
         // Envío del formulario vía AJAX para editar compañía
@@ -184,38 +222,33 @@
             });
         });
 
-        // Envío del formulario vía AJAX para crear compañía
-        $('#createCompanyForm').submit(function(e) {
+        document.getElementById("createCompanyForm").addEventListener("submit", function (e) {
             e.preventDefault();
 
             let formData = {
-                name: $('#name').val(),
-                url: $('#url').val(),
-                _token: $('meta[name="csrf-token"]').attr('content')
+                name: document.getElementById("name").value,
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute("content")
             };
 
-            $.ajax({
-                url: "{{ route('companies.store') }}",
-                type: "POST",
-                data: formData,
-                success: function(response) {
-                    alert("Compañía creada exitosamente");
-                    $('#createCompanyModal').modal('hide');
-                    location.reload();
+            fetch("{{ route('companies.store') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": formData._token
                 },
-                error: function(xhr) {
-                    let errors = xhr.responseJSON.errors;
-                    let errorMessages = '';
-                    if (errors) {
-                        Object.keys(errors).forEach(function(key) {
-                            errorMessages += errors[key][0] + "\n";
-                        });
-                        alert("Errores:\n" + errorMessages);
-                    } else {
-                        alert("Ocurrió un error inesperado.");
-                    }
-                }
-            });
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Compañía creada exitosamente");
+                    modal.classList.add("hidden"); // Cierra el modal
+                    location.reload(); // Recarga la página
+                })
+                .catch(error => {
+                    alert("Ocurrió un error al crear la compañía.");
+                    console.error(error);
+                });
         });
+
     });
 </script>
