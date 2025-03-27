@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 dark:block" />
+                        <img style="height: 3rem; width: 3rem" src="{{ asset('/assets/img/logoAgriCompra.png') }}" alt="Icono">
                     </a>
                 </div>
 
