@@ -17,6 +17,7 @@
                     </x-nav-link>
                 </div>
 
+            @can('view-admin-links')
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="url('/companies')" :active="request()->is('companies')" class="text-white text-xl">
                         <i class='bx bx-buildings'></i> <span>Compañías</span>
@@ -26,6 +27,7 @@
                         <i class='bx bx-user'></i> <span>Usuarios</span>
                     </x-nav-link>
                 </div>
+            @endcan
             </div>
 
             <!-- Settings Dropdown -->
