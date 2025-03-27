@@ -13,13 +13,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $userId = auth()->id();
+        $user = auth()->user();
+
+        $userId = $user->company_id;
+
 
         $requestsAgro = RequestAgro::join('request_details', 'requests.id', '=', 'request_details.request_id')
-        ->select('requests.id', 'requests.request_date', DB::raw('count(request_details.id) as ordenes'))
-        ->where('client_id', $userId)
-        ->groupBy('requests.id', 'requests.request_date')
-        ->get();
+            ->select('requests.id', 'requests.request_date', DB::raw('count(request_details.id) as ordenes'))
+            ->where('requests.client_id',$userId) // Usar el company_id en el filtro
+            ->groupBy('requests.id', 'requests.request_date')
+            ->get();
 
         return view('dashboard', compact('requestsAgro'));
     }

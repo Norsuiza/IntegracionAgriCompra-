@@ -240,10 +240,6 @@
         let tableBody = $("#ordersTableFiltered tbody");
         tableBody.empty();
 
-        if (allOrders.length === 0) {
-            tableBody.append('<tr><td colspan="8" class="text-center">No hay órdenes disponibles</td></tr>');
-            return;
-        }
 
         allOrders.forEach(order => {
             let statusLabel = order.status === 1

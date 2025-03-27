@@ -10,7 +10,6 @@ class OrderController extends Controller
 {
 
 
-
     public function getDetails($id)
     {
         $details = OrderDetail::where('order_id', $id)->get();
@@ -18,7 +17,9 @@ class OrderController extends Controller
     }
     public function getOrders(){
 
-        $userId = auth()->id();
+        $user = auth()->user();
+
+        $userId = $user->company_id;
 
         $orders = OrderHeader::where('cliente_middleware_id', $userId)
             ->orderBy('fecha_compra', 'desc')
